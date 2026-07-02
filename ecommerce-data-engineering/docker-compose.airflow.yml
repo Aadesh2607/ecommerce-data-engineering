@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  airflow-postgres:
+
+    image: postgres:17
+
+    container_name: airflow_postgres
+
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - airflow_pg:/var/lib/postgresql/data
+
+  airflow:
+
+    image: apache/airflow:3.1.0
+
+    container_name: airflow
+
+    depends_on:
+      - airflow-postgres
+
+    ports:
+      - "8080:8080"
+
+    environment:
+
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+      POSTGRES_HOST: ecommerce_postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    volumes:
+
+      # DAGs
+      - ./airflow/dags:/opt/airflow/dags
+
+      # Logs
+      - ./airflow/logs:/opt/airflow/logs
+
+      # Plugins
+      - ./airflow/plugins:/opt/airflow/plugins
+
+      # YOUR COMPLETE PROJECT
+      - ./:/opt/project
+
+    command: standalone
+
+volumes:
+
+  airflow_pg:
