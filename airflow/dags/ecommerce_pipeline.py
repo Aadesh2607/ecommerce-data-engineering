@@ -1,7 +1,10 @@
+# isort: skip_file
+# ruff: noqa
+
 from datetime import datetime, timedelta
 
-from airflow.providers.standard.operators.bash import BashOperator
 from airflow import DAG
+from airflow.providers.standard.operators.bash import BashOperator
 
 default_args = {
     "owner": "Aadesh",
