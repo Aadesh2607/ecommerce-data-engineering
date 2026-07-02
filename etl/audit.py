@@ -9,7 +9,8 @@ def start_audit(pipeline_name: str):
 
     with engine.begin() as conn:
         result = conn.execute(
-            text("""
+            text(
+                """
                 INSERT INTO metadata.etl_audit
                 (
                     pipeline_name,
@@ -25,7 +26,8 @@ def start_audit(pipeline_name: str):
                 )
 
                 RETURNING run_id;
-            """),
+            """
+            ),
             {"pipeline_name": pipeline_name, "start_time": datetime.now()},
         )
 
@@ -40,18 +42,21 @@ def finish_audit(
 
     with engine.begin() as conn:
         start_time = conn.execute(
-            text("""
+            text(
+                """
                 SELECT start_time
                 FROM metadata.etl_audit
                 WHERE run_id=:run_id
-            """),
+            """
+            ),
             {"run_id": run_id},
         ).scalar()
 
         duration = (end_time - start_time).total_seconds()
 
         conn.execute(
-            text("""
+            text(
+                """
                 UPDATE metadata.etl_audit
 
                 SET
@@ -69,7 +74,8 @@ def finish_audit(
                 error_message=:error
 
                 WHERE run_id=:run_id
-            """),
+            """
+            ),
             {
                 "run_id": run_id,
                 "end_time": end_time,

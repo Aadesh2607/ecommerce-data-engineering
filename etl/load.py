@@ -42,10 +42,16 @@ def load_data(datasets=None):
                     logger.warning(f"{dataset}.parquet is empty.")
                     continue
 
-                existing_ids = set(conn.execute(text(f"""
+                existing_ids = set(
+                    conn.execute(
+                        text(
+                            f"""
                             SELECT {pk}
                             FROM staging.{table}
-                            """)).scalars())
+                            """
+                        )
+                    ).scalars()
+                )
 
                 new_rows = df[~df[pk].isin(existing_ids)]
 
